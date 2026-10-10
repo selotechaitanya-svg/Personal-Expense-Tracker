@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise — Minimalist Expense Tracker</title>
+  <meta name="description" content="Clean, professional, and minimalist personal expense tracker and analytics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-theme="dark">
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Top Navigation Bar -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">SpendWise</span>
+            <span class="brand-badge">API v1.0</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="api-status" id="apiStatusBadge" title="Backend API Health">
+            <span class="status-dot"></span>
+            <span class="status-text">Connected</span>
+          </div>
+
+          <div class="currency-dropdown">
+            <select id="currencySelect" aria-label="Select currency">
+              <option value="₹">₹ INR</option>
+              <option value="$" selected>$ USD</option>
+              <option value="€">€ EUR</option>
+              <option value="£">£ GBP</option>
+            </select>
+          </div>
+
+          <button class="theme-toggle" id="themeToggleBtn" aria-label="Toggle theme" title="Switch Theme">
+            <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+            </svg>
+          </button>
+
+          <a href="/docs" target="_blank" class="docs-link" title="Open Swagger API Documentation">
+            <span>API Docs</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <button class="btn btn-primary" id="openAddModalBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add Expense</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="content-container">
+
+        <!-- Stat Cards Row -->
+        <section class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Total Spend</span>
+              <div class="metric-icon total-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+              </div>
+            </div>
+            <div class="metric-value font-mono" id="statTotalSpend">$0.00</div>
+            <div class="metric-subtext" id="statExpenseCount">0 transactions recorded</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Top Category</span>
+              <div class="metric-icon top-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              </div>
+            </div>
+            <div class="metric-value" id="statTopCategory">—</div>
+            <div class="metric-subtext" id="statTopCategoryAmount">No data yet</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Monthly Spending</span>
+              <div class="metric-icon month-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              </div>
+            </div>
+            <div class="metric-value font-mono" id="statMonthlySpend">$0.00</div>
+            <div class="metric-subtext" id="statMonthlySubtext">Current Month</div>
+          </div>
+        </section>
+
+        <!-- Analytics & Category Breakdown Section -->
+        <section class="analytics-section">
+          <div class="analytics-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Spending by Category</h2>
+                <p class="card-subtitle">Visual distribution across categories</p>
+              </div>
+              <span class="category-count-badge" id="categoryCountBadge">0 Categories</span>
+            </div>
+
+            <div class="categories-list" id="categoriesList">
+              <div class="empty-state-sm">No expenses recorded yet.</div>
+            </div>
+          </div>
+
+          <!-- Monthly Filter Card -->
+          <div class="analytics-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Monthly Explorer</h2>
+                <p class="card-subtitle">Query specific monthly spend</p>
+              </div>
+            </div>
+
+            <div class="monthly-picker">
+              <div class="picker-row">
+                <div class="form-group">
+                  <label for="monthlyYearSelect">Year</label>
+                  <select id="monthlyYearSelect" class="input-select"></select>
+                </div>
+                <div class="form-group">
+                  <label for="monthlyMonthSelect">Month</label>
+                  <select id="monthlyMonthSelect" class="input-select">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="monthly-result-box">
+                <div class="monthly-result-label">Selected Period Total</div>
+                <div class="monthly-result-amount font-mono" id="monthlyResultAmount">$0.00</div>
+                <div class="monthly-result-count" id="monthlyResultCount">0 transactions</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Expenses Table Section -->
+        <section class="table-section">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="searchInput" placeholder="Search by title, note, or category..." autocomplete="off">
+              <button class="clear-search-btn" id="clearSearchBtn" aria-label="Clear search" style="display:none;">&times;</button>
+            </div>
+
+            <div class="filter-controls">
+              <div class="filter-select-wrapper">
+                <select id="categoryFilter" class="input-select" aria-label="Filter by category">
+                  <option value="">All Categories</option>
+                </select>
+              </div>
+
+              <div class="date-filter-group">
+                <input type="date" id="startDateFilter" class="input-date" title="Start date">
+                <span class="date-sep">to</span>
+                <input type="date" id="endDateFilter" class="input-date" title="End date">
+                <button class="btn btn-secondary btn-sm" id="resetFiltersBtn" title="Reset filters">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expenses List Container -->
+          <div class="expenses-table-wrapper">
+            <table class="expenses-table" id="expensesTable">
+              <thead>
+                <tr>
+                  <th class="th-date">Date</th>
+                  <th class="th-title">Title & Note</th>
+                  <th class="th-cat">Category</th>
+                  <th class="th-amount text-right">Amount</th>
+                  <th class="th-actions text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="expensesTableBody">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+
+            <!-- Empty / Loading States -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+              <div class="empty-state-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              </div>
+              <h3 class="empty-state-title">No expenses found</h3>
+              <p class="empty-state-desc">Try clearing your filters or add your first expense.</p>
+              <button class="btn btn-primary" id="emptyAddBtn">Add Expense</button>
+            </div>
+
+            <div class="loading-state" id="loadingState">
+              <div class="spinner"></div>
+              <span>Loading expenses...</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <p>Personal Expense Tracker &bull; Powered by FastAPI & SQLite/PostgreSQL</p>
+        <div class="footer-links">
+          <a href="/docs" target="_blank">Swagger Docs</a>
+          <a href="/health" target="_blank">Health Check</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal: Add / Edit Expense -->
+  <div class="modal-backdrop" id="expenseModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">New Expense</h3>
+        <button class="modal-close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="expenseForm" novalidate>
+        <input type="hidden" id="expenseIdInput">
+
+        <div class="form-body">
+          <div class="form-group">
+            <label for="formTitle">Expense Title <span class="required">*</span></label>
+            <input type="text" id="formTitle" class="input-text" placeholder="e.g. Weekly Groceries" required maxlength="200" autocomplete="off">
+            <span class="field-error" id="titleError"></span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="formAmount">Amount <span class="required">*</span></label>
+              <div class="amount-input-wrapper">
+                <span class="currency-prefix" id="formCurrencyPrefix">$</span>
+                <input type="number" id="formAmount" class="input-text font-mono" placeholder="0.00" step="0.01" min="0.01" required>
+              </div>
+              <span class="field-error" id="amountError"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="formDate">Date <span class="required">*</span></label>
+              <input type="date" id="formDate" class="input-date" required>
+              <span class="field-error" id="dateError"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="formCategory">Category <span class="required">*</span></label>
+            <div class="category-preset-chips" id="categoryChips">
+              <button type="button" class="chip" data-cat="Food">🍔 Food</button>
+              <button type="button" class="chip" data-cat="Transport">🚗 Transport</button>
+              <button type="button" class="chip" data-cat="Shopping">🛍️ Shopping</button>
+              <button type="button" class="chip" data-cat="Utilities">💡 Utilities</button>
+              <button type="button" class="chip" data-cat="Entertainment">🎬 Entertainment</button>
+              <button type="button" class="chip" data-cat="Health">💊 Health</button>
+              <button type="button" class="chip" data-cat="Education">📚 Education</button>
+              <button type="button" class="chip" data-cat="Other">📁 Other</button>
+            </div>
+            <input type="text" id="formCategory" class="input-text" placeholder="Or type custom category..." required maxlength="50" autocomplete="off">
+            <span class="field-error" id="categoryError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="formNote">Note <span class="optional">(Optional)</span></label>
+            <textarea id="formNote" class="input-textarea" placeholder="Add any details, store name, or receipt info..." rows="2" maxlength="500"></textarea>
+            <span class="field-error" id="noteError"></span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveExpenseBtn">
+            <span id="saveBtnText">Save Expense</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
