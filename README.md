@@ -52,7 +52,7 @@ A production-grade, full-stack personal finance application powered by a **FastA
 - **Monthly Explorer**: On-demand calendar query tool for any year and month.
 - **Interactive Ledger**: Searchable, filterable expense table with instant client-side search, category filter, date filters, and inline actions.
 - **Dark & Light Mode**: Built-in modern theme switcher with local storage persistence.
-- **Multi-Currency Support**: Instant toggle between USD (`$`), INR (`₹`), EUR (`€`), and GBP (`£`).
+- **Multi-Currency Support**: Defaults to Indian Rupees (`₹`) with Indian number system formatting (`en-IN`), with instant switching to USD (`$`), EUR (`€`), and GBP (`£`).
 
 ### 🛠️ Production Ready
 - **Dual Database Support**: SQLite for instant, zero-setup local development; production-ready PostgreSQL connection pooling for cloud deployments.

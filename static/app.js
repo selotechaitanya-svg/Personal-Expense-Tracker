@@ -9,10 +9,11 @@
   // ---------------------------------------------------------------------------
   // State Management
   // ---------------------------------------------------------------------------
+  const savedCurrency = localStorage.getItem('spendwise_currency');
   const state = {
     expenses: [],
     categories: [],
-    currency: localStorage.getItem('spendwise_currency') || '$',
+    currency: (savedCurrency && savedCurrency !== '$') ? savedCurrency : '₹',
     theme: localStorage.getItem('spendwise_theme') || 'dark',
     editingId: null,
     searchQuery: '',
@@ -120,7 +121,8 @@
   // ---------------------------------------------------------------------------
   function formatMoney(amount) {
     const num = Number(amount) || 0;
-    return `${state.currency}${num.toLocaleString(undefined, {
+    const locale = state.currency === '₹' ? 'en-IN' : undefined;
+    return `${state.currency}${num.toLocaleString(locale, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
@@ -660,6 +662,7 @@
   function init() {
     applyTheme(state.theme);
     dom.currencySelect.value = state.currency;
+    dom.formCurrencyPrefix.textContent = state.currency;
     populateYearSelector();
     setupEventListeners();
     loadAllData();
